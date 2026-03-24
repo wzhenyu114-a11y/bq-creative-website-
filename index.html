@@ -3,434 +3,491 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAIN · TVC 摄影指导</title>
+  <title>RAIN · Cinematographer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['"Noto Sans SC"', 'sans-serif'] },
-          colors: { brand: '#c8a96e' }
+          fontFamily: {
+            mono: ['"Gill Sans"', '"Gill Sans MT"', 'Calibri', 'sans-serif'],
+          },
+          colors: {
+            'cream':     '#d4c9b0',
+            'cream-dim': '#8a7f6e',
+            'site-bg':   '#130f0a',
+          },
+          letterSpacing: {
+            'nav':   '0.28em',
+            'title': '0.38em',
+          }
         }
       }
     }
   </script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <!-- Gill Sans is a system font on macOS/Windows; no Google Fonts import needed -->
   <style>
     html { scroll-behavior: smooth; }
 
-    .nav-glass {
-      background: rgba(0, 0, 0, 0.38);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+    /* Gallery spotlight hover */
+    .portfolio-img {
+      opacity: 0.65;
+      transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  opacity  0.5s ease-in-out;
+    }
+    .portfolio-item:hover .portfolio-img {
+      transform: scale(1.025);
+      opacity: 1;
     }
 
-    /* 16:9 比例容器 */
-    .ratio-16-9 {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
+    .caption-cat {
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #5a5044;
     }
-    .ratio-16-9 > * {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+    .caption-title {
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8a7f6e;
     }
-
-    /* 4:5 人像比例 */
-    .ratio-4-5 {
-      position: relative;
-      padding-bottom: 125%;
-      height: 0;
-      overflow: hidden;
-    }
-    .ratio-4-5 > * {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* 作品卡片悬停遮罩 */
-    .card-overlay { opacity: 0; transition: opacity 0.35s ease; }
-    .project-card:hover .card-overlay { opacity: 1; }
   </style>
 </head>
 
-<body class="bg-[#080808] text-white font-sans antialiased">
+<body class="bg-black text-cream font-mono antialiased">
 
-  <!-- ══════════════════════════════════════════════
-       弥散光背景层：固定在最底层，不干扰内容
-       ══════════════════════════════════════════════ -->
-  <div class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index:0;">
-    <!-- 左上：极低饱和度幽蓝，opacity 18% -->
-    <div class="absolute rounded-full blur-3xl opacity-[0.18]"
-         style="width:65vw; height:65vw; max-width:860px; max-height:860px;
-                top:-18%; left:-12%;
-                background: radial-gradient(circle, #1e3a5f 0%, transparent 72%);"></div>
-    <!-- 右下：琥珀暖金，opacity 9%，呼应 Rembrandt 布光 -->
-    <div class="absolute rounded-full blur-3xl opacity-[0.09]"
-         style="width:60vw; height:60vw; max-width:800px; max-height:800px;
-                bottom:-15%; right:-10%;
-                background: radial-gradient(circle, #c8a96e 0%, transparent 70%);"></div>
-  </div>
+  <!-- ═══════════════════════════════════════════════════════
+       HEADER — three-column: left-nav | name | right-nav
+       Faithfully replicates the Dale McCready layout
+       ═══════════════════════════════════════════════════════ -->
+  <header class="w-full px-8 md:px-14 py-7 border-b border-cream/[0.07]">
+    <div class="flex items-center justify-center gap-7 md:gap-10">
 
-  <!-- ══════════════════════════════════════════════
-       导航栏：固定 · 毛玻璃
-       ══════════════════════════════════════════════ -->
-  <header class="fixed top-0 inset-x-0 z-50 nav-glass">
-    <nav class="max-w-7xl mx-auto px-8 md:px-12 py-5 flex items-center justify-between">
-      <a href="#hero" class="text-sm font-light tracking-[0.55em] uppercase text-white">
-        RAIN
+      <!-- LEFT NAV -->
+      <a href="#commercial"
+         class="text-[11px] tracking-nav uppercase text-cream-dim
+                hover:text-cream transition-colors duration-300 whitespace-nowrap">
+        COMMERCIAL
       </a>
-      <ul class="hidden md:flex items-center gap-10 text-xs tracking-widest text-gray-400 uppercase">
-        <li><a href="#about" class="hover:text-white transition-colors duration-200">关于</a></li>
-        <li><a href="#works" class="hover:text-white transition-colors duration-200">广告作品</a></li>
-        <li>
-          <a href="#contact"
-             class="border border-white/25 text-white/60 px-5 py-1.5
-                    hover:border-white/70 hover:text-white transition-all duration-300">
-            合作咨询
-          </a>
-        </li>
-      </ul>
-      <button class="md:hidden flex flex-col gap-1.5 p-2" aria-label="菜单">
-        <span class="w-6 h-px bg-white block"></span>
-        <span class="w-6 h-px bg-white block"></span>
-        <span class="w-4 h-px bg-white block"></span>
-      </button>
-    </nav>
+      <a href="#story"
+         class="hidden md:block text-[11px] tracking-nav uppercase text-cream-dim
+                hover:text-cream transition-colors duration-300 whitespace-nowrap">
+        STORY
+      </a>
+
+      <!-- CENTER: NAME (two lines, larger, centered) -->
+      <div class="text-center leading-tight select-none mx-7 md:mx-10">
+        <p class="text-[13px] md:text-[15px] tracking-title uppercase text-cream whitespace-nowrap">
+          RAIN &nbsp; WANG
+        </p>
+        <p class="text-[11px] md:text-[13px] tracking-nav uppercase text-cream-dim whitespace-nowrap mt-0.5">
+          DIRECTOR OF PHOTOGRAPHY
+        </p>
+      </div>
+
+      <!-- RIGHT NAV -->
+      <a href="#story"
+         class="hidden lg:block text-[11px] tracking-nav uppercase text-cream-dim
+                hover:text-cream transition-colors duration-300 whitespace-nowrap">
+        STILLS
+      </a>
+      <a href="#contact"
+         class="text-[11px] tracking-nav uppercase text-cream-dim
+                hover:text-cream transition-colors duration-300 whitespace-nowrap">
+        CONTACT
+      </a>
+
+    </div>
   </header>
 
 
-  <!-- ══════════════════════════════════════════════
-       第一屏：极简 Hero
-       ══════════════════════════════════════════════ -->
-  <section id="hero" class="h-screen flex items-center justify-center relative" style="z-index:1;">
-    <div class="text-center px-6 select-none">
-      <h1 class="text-4xl md:text-5xl font-light tracking-widest text-white leading-none">
-        我太想进步了
+  <!-- ═══════════════════════════════
+       HERO SECTION
+       ═══════════════════════════════ -->
+  <section id="hero" class="bg-black">
+
+    <!-- Text block: large vertical padding, centered -->
+    <div class="text-center px-6 py-28 md:py-36">
+      <h1 class="text-2xl md:text-3xl lg:text-4xl font-light uppercase tracking-[0.25em] text-white leading-tight mb-8">
+        NO WRONG CHOICES IN LIFE
       </h1>
-      <p class="mt-8 text-sm font-light tracking-[0.45em] text-gray-400">
-        我要装逼
-      </p>
     </div>
+
+    <!-- Full-width cinematic poster image, edge-to-edge, no padding -->
+    <div class="w-full">
+      <img src="2001.png"
+           alt="Cinematic hero image"
+           class="w-full object-cover block"
+           style="max-height: 70vh; object-position: center center;" />
+    </div>
+
   </section>
 
 
-  <!-- ══════════════════════════════════════════════
-       第二屏：关于我
-       ══════════════════════════════════════════════ -->
-  <section id="about" class="py-44 px-8 md:px-12 relative" style="z-index:1;">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-28 items-center">
+  <!-- ═══════════════════════════════
+       COMMERCIAL WORKS
+       ═══════════════════════════════ -->
+  <main id="commercial" class="px-6 md:px-12 lg:px-16 pt-16 pb-6">
 
-        <!-- 左列：个人简介 -->
-        <div>
-          <p class="text-brand text-xs tracking-[0.65em] uppercase mb-6 font-light">About</p>
-          <h2 class="text-3xl md:text-4xl font-light tracking-wide leading-snug mb-8">
-            关于我
-          </h2>
-          <div class="w-10 h-px bg-brand mb-10"></div>
+    <p class="caption-cat mb-12">Commercial Works</p>
 
-          <p class="text-gray-400 font-light leading-[1.9] text-base mb-6">
-            专注 TVC 广告片摄影，拥有多年商业广告拍摄经验，
-            服务过快消、汽车、奢侈品、科技等多个行业头部品牌。
-          </p>
-          <p class="text-gray-400 font-light leading-[1.9] text-base mb-12">
-            擅长以精准的光线控制与镜头语言，将品牌核心价值
-            转化为具有冲击力的视觉表达。
-          </p>
+    <!-- Uniform 3-col grid, tight gap -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-0">
 
-          <div class="flex flex-wrap gap-2">
-            <span class="border border-gray-800 text-gray-500 text-xs px-3 py-1.5 tracking-wide">快消品 TVC</span>
-            <span class="border border-gray-800 text-gray-500 text-xs px-3 py-1.5 tracking-wide">汽车广告</span>
-            <span class="border border-gray-800 text-gray-500 text-xs px-3 py-1.5 tracking-wide">奢侈品影片</span>
-            <span class="border border-gray-800 text-gray-500 text-xs px-3 py-1.5 tracking-wide">科技品牌</span>
+      <!-- ── 01 吕良伟X传奇 ── -->
+      <a href="https://www.xinpianchang.com/a13567409?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/吕良伟X传奇.png" alt="吕良伟X传奇"
+                 class="portfolio-img w-full h-full object-cover" />
           </div>
-        </div>
-
-        <!-- 右列：个人形象照占位（4:5） -->
-        <div class="flex justify-center md:justify-end">
-          <div class="w-full max-w-xs md:max-w-sm lg:max-w-md">
-            <div class="ratio-4-5 rounded-sm overflow-hidden"
-                 style="background:#0d0d0d;
-                        box-shadow: 0 30px 80px rgba(0,0,0,0.7),
-                                    0 0 0 1px rgba(255,255,255,0.05);">
-              <div class="flex flex-col items-center justify-center gap-3 text-gray-700">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
-                  <circle cx="12" cy="8" r="4"/>
-                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-                </svg>
-                <span class="text-xs tracking-[0.4em] uppercase">Portrait</span>
-              </div>
-            </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">吕良伟 X 传奇</h3>
           </div>
-        </div>
+        </article>
+      </a>
 
-      </div>
+      <!-- ── 02 吕良伟X李子雄X传奇 ── -->
+      <a href="https://www.xinpianchang.com/a13566656?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/吕良伟X李子雄X传奇.png" alt="吕良伟X李子雄X传奇"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">吕良伟 X 李子雄 X 传奇</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 03 程亮X天猫 ── -->
+      <a href="https://www.xinpianchang.com/a12940065?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/程亮X天猫.png" alt="程亮X天猫"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">程亮 X 天猫</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 04 CCTV元宵节广告 ── -->
+      <a href="https://www.xinpianchang.com/a13282876?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/CCTV元宵节广告.png" alt="CCTV元宵节广告"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">CCTV 元宵节广告</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 05 《好一朵木兰花》公益广告 ── -->
+      <a href="https://www.xinpianchang.com/a13187403?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/《好一朵木兰花》公益广告.png" alt="《好一朵木兰花》公益广告"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">《好一朵木兰花》公益广告</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 06 鑫山保险代理 ── -->
+      <a href="https://www.xinpianchang.com/a12278263?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/鑫山保险.png" alt="鑫山保险代理"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">鑫山保险代理</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 07 Media美的公益广告 ── -->
+      <a href="https://www.xinpianchang.com/a11735419?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/Media美的公益广告.png" alt="Media美的公益广告"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">Media 美的公益广告</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 08 AMD X 郑永康 ── -->
+      <a href="https://www.xinpianchang.com/a13407576?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/AMD X 郑永康.png" alt="AMD X 郑永康"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">AMD X 郑永康</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 09 DēLongHi德龙 ── -->
+      <a href="https://www.xinpianchang.com/a13210361?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/DēLongHi德龙.png" alt="DēLongHi德龙"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">DēLongHi 德龙</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 10 奥伦纳素 X 童瑶 ── -->
+      <a href="https://www.xinpianchang.com/a11003368?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/奥伦纳素 X 童瑶.png" alt="奥伦纳素 X 童瑶"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">奥伦纳素 X 童瑶</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 11 Peacebird ── -->
+      <a href="https://www.xinpianchang.com/a12471727?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/Peacebird.png" alt="Peacebird"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">Peacebird</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 12 Peacebird Child ── -->
+      <a href="https://www.xinpianchang.com/a12525879?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/Peacebird Child.png" alt="Peacebird Child"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">Peacebird Child</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 13 Lancome ── -->
+      <a href="https://www.xinpianchang.com/a11305653?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/Lancome.png" alt="Lancome"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">Lancome</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 14 Aptamil Child ── -->
+      <a href="https://www.xinpianchang.com/a11527991?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/Aptamil Child.png" alt="Aptamil Child"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">Aptamil Child</h3>
+          </div>
+        </article>
+      </a>
+
+      <!-- ── 15 Aptamil ── -->
+      <a href="https://www.xinpianchang.com/a11602830?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[16/9] overflow-hidden bg-black">
+            <img src="./images/Aptamil.png" alt="Aptamil"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">Aptamil</h3>
+          </div>
+        </article>
+      </a>
+
     </div>
-  </section>
 
+    <!-- 竖版作品行：居中限宽，三张 9:16 卡片并排 -->
+    <div class="grid grid-cols-3 gap-x-2 max-w-2xl mx-auto mt-0">
 
-  <!-- ══════════════════════════════════════════════
-       第三屏：广告作品集（TVC）
-       ══════════════════════════════════════════════ -->
-  <section id="works" class="py-44 px-8 md:px-12 relative" style="z-index:1;">
-    <div class="max-w-7xl mx-auto">
-
-      <div class="mb-20">
-        <p class="text-brand text-xs tracking-[0.65em] uppercase mb-5 font-light">Commercial Works</p>
-        <h2 class="text-3xl md:text-4xl font-light tracking-wide">广告作品</h2>
-        <div class="w-10 h-px bg-brand mt-5"></div>
-      </div>
-
-      <!--
-        统一 grid-cols-6 / gap-3：
-          作品 01         → col-span-6   全宽
-          作品 02–03      → col-span-3   各占一半
-          作品 04–12      → col-span-2   每行三件
-      -->
-      <div class="grid grid-cols-6 gap-3">
-
-        <!-- ── 作品 01：全宽主打 ── -->
-        <article class="project-card col-span-6 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc01/1920/1080" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-8 py-2.5 tracking-widest uppercase">查看全案</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-8 md:p-10 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-3">TVC · 广告</p>
-              <h3 class="text-2xl md:text-3xl font-light">作品</h3>
-            </div>
+      <!-- ── 16 姜妍 X 汾酒 ── -->
+      <a href="https://www.xinpianchang.com/a13408736?searchKw=%E6%B1%BE%E9%85%92%E8%9B%87%E5%B9%B4&from=search_post"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[9/16] overflow-hidden bg-black">
+            <img src="./images/姜妍 X 汾酒.png" alt="姜妍 X 汾酒"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">姜妍 X 汾酒</h3>
           </div>
         </article>
+      </a>
 
-        <!-- ── 作品 02 ── -->
-        <article class="project-card col-span-6 md:col-span-3 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc02/1280/720" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-6 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-6 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-2">TVC · 广告</p>
-              <h3 class="text-lg font-light">作品</h3>
-            </div>
+      <!-- ── 17 老凤祥 ── -->
+      <a href="https://www.xinpianchang.com/a13607904?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[9/16] overflow-hidden bg-black">
+            <img src="./images/老凤祥.png" alt="老凤祥"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">老凤祥</h3>
           </div>
         </article>
+      </a>
 
-        <!-- ── 作品 03 ── -->
-        <article class="project-card col-span-6 md:col-span-3 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc03/1280/720" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-6 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-6 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-2">TVC · 广告</p>
-              <h3 class="text-lg font-light">作品</h3>
-            </div>
+      <!-- ── 18 老凤祥CNY ── -->
+      <a href="https://www.xinpianchang.com/a13607908?from=UserProfile"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="portfolio-item cursor-pointer block">
+        <article>
+          <div class="aspect-[9/16] overflow-hidden bg-black">
+            <img src="./images/老凤祥CNY.png" alt="老凤祥CNY"
+                 class="portfolio-img w-full h-full object-cover" />
+          </div>
+          <div class="mt-3 mb-9">
+            <h3 class="caption-title">老凤祥 CNY</h3>
           </div>
         </article>
+      </a>
 
-        <!-- ── 作品 04 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc04/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-        <!-- ── 作品 05 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc05/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-        <!-- ── 作品 06 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc06/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-        <!-- ── 作品 07 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc07/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-        <!-- ── 作品 08 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc08/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-        <!-- ── 作品 09 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc09/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-        <!-- ── 作品 10 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc10/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-        <!-- ── 作品 11 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc11/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-        <!-- ── 作品 12 ── -->
-        <article class="project-card col-span-6 md:col-span-2 relative overflow-hidden cursor-pointer">
-          <div class="ratio-16-9">
-            <img src="https://picsum.photos/seed/tvc12/854/480" alt="作品"
-                 class="w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div class="card-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="border border-white text-white text-xs px-5 py-2 tracking-widest uppercase">查看项目</span>
-            </div>
-            <div class="absolute bottom-0 left-0 p-4 z-10">
-              <p class="text-brand text-xs tracking-widest uppercase mb-1">TVC · 广告</p>
-              <h3 class="text-sm font-light">作品</h3>
-            </div>
-          </div>
-        </article>
-
-      </div>
     </div>
-  </section>
+  </main>
 
 
-  <!-- ══════════════════════════════════════════════
-       合作咨询
-       ══════════════════════════════════════════════ -->
-  <section id="contact" class="py-40 px-8 md:px-12 relative" style="z-index:1;">
-    <div class="max-w-7xl mx-auto">
-      <p class="text-brand text-xs tracking-[0.65em] uppercase mb-6 font-light">Contact</p>
-      <h2 class="text-3xl md:text-4xl font-light tracking-wide mb-8">合作咨询</h2>
-      <div class="w-10 h-px bg-brand mb-12"></div>
-      <ul class="space-y-6 text-gray-400 font-light">
-        <li class="flex items-center gap-4">
-          <span class="text-brand text-xs tracking-widest uppercase w-14">Email</span>
-          <a href="mailto:your@email.com" class="hover:text-white transition-colors">your@email.com</a>
-        </li>
-        <li class="flex items-center gap-4">
-          <span class="text-brand text-xs tracking-widest uppercase w-14">微信</span>
-          <span>your_wechat_id</span>
-        </li>
-        <li class="flex items-center gap-4">
-          <span class="text-brand text-xs tracking-widest uppercase w-14">微博</span>
-          <a href="#" class="hover:text-white transition-colors">@your_weibo</a>
-        </li>
-        <li class="flex items-center gap-4">
-          <span class="text-brand text-xs tracking-widest uppercase w-14">Vimeo</span>
-          <a href="#" class="hover:text-white transition-colors">vimeo.com/yourname</a>
-        </li>
-      </ul>
+  <!-- ═══════════════════════════════
+       FOOTER / CONTACT
+       ═══════════════════════════════ -->
+  <footer id="contact" class="border-t border-cream/[0.05] pt-28 pb-24 px-6 text-center">
+
+    <p class="caption-cat mb-10" style="font-size:12px;color:#8a7f6e;">Contact</p>
+
+    <a href="mailto:wzhenyu114@gmail.com"
+       class="block text-[13px] tracking-nav text-cream-dim
+              hover:text-cream transition-colors duration-300 mb-14">
+      wzhenyu114@gmail.com
+    </a>
+
+    <!-- Social — two rows, stacked -->
+    <div class="flex flex-col items-center gap-8 mb-20">
+
+      <!-- 新片场 -->
+      <!-- 替换 href="#" 为你的新片场主页链接 -->
+      <a href="#" aria-label="新片场"
+         class="flex flex-col items-center gap-2.5
+                text-cream/50 hover:text-cream transition-colors duration-300">
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none"
+             stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="6" width="26" height="20" rx="2"/>
+          <rect x="3"  y="9"  width="4" height="3" rx="0.5" fill="currentColor" stroke="none" opacity="0.7"/>
+          <rect x="3"  y="14" width="4" height="3" rx="0.5" fill="currentColor" stroke="none" opacity="0.7"/>
+          <rect x="3"  y="19" width="4" height="3" rx="0.5" fill="currentColor" stroke="none" opacity="0.7"/>
+          <rect x="25" y="9"  width="4" height="3" rx="0.5" fill="currentColor" stroke="none" opacity="0.7"/>
+          <rect x="25" y="14" width="4" height="3" rx="0.5" fill="currentColor" stroke="none" opacity="0.7"/>
+          <rect x="25" y="19" width="4" height="3" rx="0.5" fill="currentColor" stroke="none" opacity="0.7"/>
+          <polygon points="13,12 13,20 21,16" fill="currentColor" stroke="none" opacity="0.55"/>
+        </svg>
+        <span style="font-size:9px;letter-spacing:0.35em;text-transform:uppercase;">新片场</span>
+      </a>
+
+      <!-- 微信名片 -->
+      <!-- 替换 href="#" 为你的微信名片链接 -->
+      <a href="#" aria-label="微信"
+         class="flex flex-col items-center gap-2.5
+                text-cream/50 hover:text-cream transition-colors duration-300">
+        <svg width="26" height="24" viewBox="0 0 32 28" fill="none"
+             stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C6.477 2 2 5.8 2 10.5c0 2.5 1.2 4.75 3.15 6.3L4 20l3.3-1.5A11.6 11.6 0 0 0 12 19c.4 0 .8-.02 1.2-.06"/>
+          <path d="M19 10c5.523 0 10 3.582 10 8s-4.477 8-10 8a10.8 10.8 0 0 1-3.9-.72L11 27l1.1-3.3C10.2 22.38 9 20.3 9 18c0-4.418 4.477-8 10-8z"/>
+        </svg>
+        <span style="font-size:9px;letter-spacing:0.35em;text-transform:uppercase;">微信</span>
+      </a>
+
     </div>
-  </section>
 
+    <p style="font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:#8a7f6e;">
+      © 2026 Rain Wang · All Rights Reserved
+    </p>
 
-  <!-- ══════════════════════════════════════════════
-       页脚
-       ══════════════════════════════════════════════ -->
-  <footer class="py-8 px-8 md:px-12 border-t border-white/5 relative" style="z-index:1;">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3
-                text-gray-600 text-xs tracking-widest">
-      <span class="uppercase">RAIN · TVC Cinematographer</span>
-      <span>© 2026 All Rights Reserved</span>
-    </div>
   </footer>
 
 </body>
