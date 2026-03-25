@@ -54,6 +54,13 @@
       text-transform: uppercase;
       color: #8a7f6e;
     }
+
+    /* Mobile: faster transition feels more responsive to scroll */
+    @media (max-width: 767px) {
+      .portfolio-img {
+        transition: opacity 0.2s ease-out;
+      }
+    }
   </style>
 </head>
 
@@ -495,6 +502,59 @@
     </p>
 
   </footer>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       MOBILE SCROLL-FOCUS: Gallery items brighten when
+       centred in the viewport; desktop hover is untouched.
+       ═══════════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      var MIN_OPACITY = 0.35;
+      var BREAKPOINT  = 768;
+
+      function isMobile() {
+        return window.innerWidth < BREAKPOINT;
+      }
+
+      function update() {
+        var imgs = document.querySelectorAll('.portfolio-img');
+
+        if (!isMobile()) {
+          // Restore CSS control on desktop — remove any inline opacity
+          imgs.forEach(function (img) { img.style.opacity = ''; });
+          return;
+        }
+
+        var vcenter  = window.innerHeight / 2;
+        var maxDist  = window.innerHeight / 2; // beyond half-screen → fully dim
+
+        imgs.forEach(function (img) {
+          var rect      = img.getBoundingClientRect();
+          var itemMid   = rect.top + rect.height / 2;
+          var dist      = Math.abs(itemMid - vcenter);
+          var t         = Math.min(dist / maxDist, 1);           // 0 = centre, 1 = edge
+          var opacity   = MIN_OPACITY + (1 - MIN_OPACITY) * (1 - t);
+          img.style.opacity = opacity.toFixed(3);
+        });
+      }
+
+      // rAF-throttled scroll handler
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          requestAnimationFrame(function () { update(); ticking = false; });
+          ticking = true;
+        }
+      }, { passive: true });
+
+      // Re-evaluate on resize (handles orientation change / desktop↔mobile switch)
+      window.addEventListener('resize', update, { passive: true });
+
+      // Run once on load
+      update();
+    })();
+  </script>
 
 </body>
 </html>
